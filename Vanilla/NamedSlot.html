@@ -1,0 +1,26 @@
+<script type=module>
+
+class
+NamedSlot extends HTMLElement {
+	constructor() {
+		super();
+
+		const
+		SR = this.attachShadow( { mode: 'open' } )
+
+		SR.appendChild( document.createElement( 'slot' ) ).setAttribute( 'name', 'header'	)
+		SR.appendChild( document.createElement( 'slot' ) ).setAttribute( 'name', 'body'		)
+		SR.appendChild( document.createElement( 'slot' ) ).setAttribute( 'name', 'footer'	)
+	}
+}
+
+customElements.define( 'named-slot', NamedSlot )
+</script>
+
+<div style="border: 1px solid black; padding: 0 0.2rem">
+	<named-slot>
+		<div slot=footer	>FOOTER	</div>
+		<div slot=body		>BODY	</div>
+		<div slot=header	>HEADER	</div>
+	</named-slot>
+</div>

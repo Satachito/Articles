@@ -1,0 +1,42 @@
+<script type=module>
+
+export class
+AttrWatch extends HTMLElement {
+	constructor() {
+		super()
+		this.innerHTML = '<span></span> <span></span>'
+	}
+
+	static get
+	observedAttributes() {
+		return [ 'data-greet', 'data-name' ]
+	}
+
+	attributeChangedCallback( name, oldVal, newVal ) {
+		switch ( name ) {
+		case 'data-greet'	: this.children[ 0 ].textContent = newVal; break
+		case 'data-name'	: this.children[ 1 ].textContent = newVal; break
+		}
+	}
+
+	connectedCallback() {
+		this.children[ 0 ].textContent = this.getAttribute( 'data-greet' ) ?? ''
+		this.children[ 1 ].textContent = this.getAttribute( 'data-name' ) ?? ''
+	}
+}
+customElements.define( 'attr-watch', AttrWatch )
+
+</script>
+
+<attr-watch data-greet="Hello!" data-name="World"></attr-watch><br>
+<br>
+<button id=CHANGE_GREET	>change greet to '¡Hola!'	</button>
+<button id=CHANGE_NAME	>change name to 'Mundo'		</button>
+
+<script>
+	const
+	ATTR_WATCH = document.querySelector( 'attr-watch' )
+	CHANGE_GREET.onclick = () => ATTR_WATCH.setAttribute( 'data-greet'	, '¡Hola!'	)
+	CHANGE_NAME	.onclick = () => ATTR_WATCH.setAttribute( 'data-name'	, 'Mundo'	)
+</script>
+

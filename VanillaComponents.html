@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang=ja>
+<meta charset=UTF-8>
+<title>Introduction to VanillaJS in the Age of WebComponents</title>
+<style>
+
+*, *::before, *::after {
+;	font-family	: monospace
+;	box-sizing	: border-box
+}
+
+section	{ margin-bottom	: 3em }
+
+</style>
+
+<h1>Introduction to VanillaJS in the Age of WebComponents</h1>
+
+<section>
+<p>
+	<strong>WebComponents</strong> are a standard for reusable, browser-native HTML components.
+	Thanks to this, we can now build component-based pages using native JavaScript — <strong>VanillaJS</strong> — without relying on frameworks like Angular, React, or Vue.
+</p>
+</section>
+
+<section>
+<h2>Before: Without Components</h2>
+<p>Imagine a website that has two HTML files — a landing page and a main content page.</p>
+
+<vanilla-source data-file=Plain/index.css			></vanilla-source>
+<vanilla-frame	data-file=Plain/landingPage.html	></vanilla-frame>
+<vanilla-frame	data-file=Plain/mainContents.html	></vanilla-frame>
+
+<p>In this structure, common parts like the header and footer are manually written in each file. Any update requires editing both files, which is tedious and error-prone.</p>
+
+</section>
+
+
+<section>
+<h2>After: Reusable with Components</h2>
+<p>By turning the common parts into <strong>WebComponents</strong>, we can avoid duplication and make updates in just one place.</p>
+
+<vanilla-source data-file=Vanilla/index.css			></vanilla-source>
+<p><em>※ index.css is identical to Plain/index.css</em></p>
+<vanilla-source data-file=Vanilla/Components.js		></vanilla-source>
+<vanilla-frame	data-file=Vanilla/landingPage.html	></vanilla-frame>
+<vanilla-frame	data-file=Vanilla/mainContents.html	></vanilla-frame>
+</section>
+
+
+<section>
+<h2>Further Modularization</h2>
+<p>We've now realized there are other reusable UI parts within this very page.</p>
+<ul>
+	<li>Displaying a file name and its content</li>
+	<li>Showing an HTML preview frame along with it</li>
+</ul>
+<p>These are also defined as WebComponents.</p>
+
+<p>
+	You can write the following in your HTML:<br>
+	<br>
+	<em><v-e data-html="<vanilla-source data-file=Components.js></vanilla-source>"></v-e></em><br>
+	<br>
+	and it will display the contents of the component-defined file as shown below:
+</p>
+
+<vanilla-source data-file=Components.js></vanilla-source>
+
+<p>
+	<small>(SAT/SAT.js is available at <a href="https://github.com/Satachito/SAT" target="_blank">https://github.com/Satachito/SAT</a>)</small>
+</p>
+</section>
+
+<h2>Using ShadowRoot</h2>
+
+<p>
+Up to this point, the WebComponents we've defined haven't used <code>shadowRoot</code>.
+The <strong>ShadowRoot</strong> creates a scoped DOM tree within a component, most notably isolating its CSS styles from the rest of the document.
+</p>
+
+<p>
+As an example, let's create a simple spinner component.
+</p>
+
+<vanilla-frame data-file=Vanilla/Spinner.html></vanilla-frame>
+
+<p>
+If you define the <code>@keyframes spin</code> animation in a <v-e data-html="<style>"></v-e> that's attached directly to <code>this</code> (i.e., the outer component), the animation becomes globally available and may conflict with other parts of the page.
+In contrast, placing the styles inside the <code>shadowRoot</code> ensures that the animation is scoped and won't leak out.
+</p>
+
+<p>
+Also, the <code>:host</code> selector is a special one that targets the custom element itself from within its Shadow DOM.
+</p>
+
+<section>
+<h2>Styling with adoptedStyleSheets</h2>
+
+<p>
+For even cleaner and more performant styling within <code>shadowRoot</code>, you can use <strong>adoptedStyleSheets</strong>.
+This allows you to define and reuse styles via JavaScript using the <code>CSSStyleSheet</code> API.
+</p>
+
+<p>
+Unlike writing raw CSS strings inside <code>innerHTML</code>, <code>adoptedStyleSheets</code> is more efficient and lets you share styles across multiple components or even across pages.
+</p>
+
+<vanilla-frame data-file=Vanilla/adoptedStyleSheets.html></vanilla-frame>
+
+<p>
+Note: <code>adoptedStyleSheets</code> is supported in most modern browsers including Chrome and Safari, but older ones may require polyfills.
+</p>
+</section>
+
+<section>
+<h2>Using <v-e data-html="<slot>"></v-e> for Content Projection</h2>
+
+<p>
+The <v-e data-html="<slot>"></v-e> element is used in WebComponents to project external content into the component's shadow DOM.
+It works like a placeholder that gets filled with the content placed between the opening and closing tags of the custom element.
+</p>
+
+<p>
+For example, see <em>adoptedStyleSheets.html</em> above.
+</p>
+
+<p>
+You can even name slots using <code>name</code> attributes and assign content to them using <code>slot</code> attributes.
+This makes it easy to build components with multiple customizable areas.
+</p>
+
+<vanilla-frame data-file=Vanilla/NamedSlot.html></vanilla-frame>
+
+</section>
+
+
+<section>
+<h2>Reusing Templates</h2>
+
+<p>
+If your component's layout is defined in HTML and shared across multiple components or instances, using a <v-e data-html="<template>"></v-e> is a clean solution.
+</p>
+
+<p>
+You can define a template in your HTML or in JavaScript, clone its content, and attach it to the shadow root or DOM as needed.
+</p>
+
+<vanilla-frame data-file=Vanilla/Template.html></vanilla-frame>
+</section>
+
+
+<h2>Customized Built-in Elements</h2>
+
+<p>
+Customized built-in elements are a type of Web Component that allow you to extend native HTML elements such as
+<v-e data-html="<button>"></v-e>, <v-e data-html="<input>"></v-e>, or <v-e data-html="<ul>"></v-e>.
+Instead of creating entirely new tags (like <v-e data-html="<my-button>"></v-e>, customized built-in elements enhance the behavior or appearance of existing elements while preserving their built-in semantics, behaviors, and accessibility.
+</p>
+
+<p>
+One major benefit of customized built-in elements is that they <strong>inherit all native behaviors and properties automatically</strong>. This means you don't need to manually proxy or reimplement attributes, events, or accessibility features — unlike with <strong>autonomous custom elements</strong> (e.g., `<v-e data-html="<my-button>"></v-e>`), where you often have to copy or forward attributes like `disabled`, `type`, or `value` yourself.
+</p>
+
+<vanilla-frame data-file=Vanilla/CBE.html></vanilla-frame>
+
+<p>
+> ⚠️ Note: Despite their advantages, customized built-in elements are still not widely supported across all browsers (notably Safari). For this reason, many developers still rely on autonomous custom elements for broader compatibility.
+</p>
+
+<p>
+When customized built-in elements are not supported, such as in Safari, and you want to create a component that wraps a native element like <v-e data-html="<button>"></v-e>, you typically need to manually copy relevant attributes and properties—such as disabled—to ensure the component behaves like the original element.
+</p>
+
+</section>
+
+
+
+<section>
+<h2>Passing Data with Attributes</h2>
+
+<p>
+WebComponents can accept data from the outside via <strong>attributes</strong>, just like standard HTML elements.
+To react to changes in attributes, define a static method called <code>observedAttributes</code> and implement <code>attributeChangedCallback</code>.
+</p>
+
+<p>
+This makes it possible to make your components dynamic and responsive to attribute changes.
+</p>
+
+
+<vanilla-frame data-file=Vanilla/Attributes.html></vanilla-frame>
+
+</section>
+
+
+<section>
+<h2>Synchronizing Property and Attribute</h2>
+
+<p>
+WebComponents receive data through <strong>attributes</strong>, but internally you'll often work with <strong>properties</strong>.
+They seem similar but behave differently.
+</p>
+
+<ul>
+	<li><strong>Attributes</strong> are always strings and live in HTML.</li>
+	<li><strong>Properties</strong> are JS values that live on the DOM object.</li>
+</ul>
+
+<p>
+It's often a good idea to keep them in sync — when an attribute is updated, reflect it to a property, and vice versa.
+</p>
+
+<vanilla-frame  data-file=Vanilla/SyncButton.html></vanilla-frame>
+<a href=Vanilla/SyncButton.html target=_blank>Open in a new tab.</a>
+</section>
+
+
+<section>
+<h2>Summary & Next Steps</h2>
+
+<p>
+In this tutorial, we've learned how to build reusable and modular components using native WebComponents.  
+By using <strong>Shadow DOM</strong> for encapsulation and <strong>adoptedStyleSheets</strong> for scoped styling, you can create clean, maintainable, and performant components with pure VanillaJS.
+</p>
+
+<p>
+WebComponents allow you to build components without relying on frameworks like React, Vue, or Angular. You can leverage modern JavaScript features such as ES modules, template literals, and custom events to build robust applications.
+</p>
+
+<p>
+In the future, you can extend your knowledge by:
+<ul>
+	<li>Exploring more advanced topics like <code>observedAttributes</code> and <code>attributeChangedCallback</code> for handling dynamic attributes.</li>
+	<li>Integrating WebComponents into larger projects with a modern build system (e.g., <code>Webpack</code>, <code>Vite</code>, or <code>Rollup</code>).</li>
+	<li>Contributing to the evolving ecosystem of WebComponents and native browser features!</li>
+</ul>
+</p>
+
+<p>
+We hope this guide has helped you get started with WebComponents.  
+Feel free to explore and experiment with what you've learned today, and continue building amazing components for the web!
+</p>
+
+<p>
+<strong>Happy coding!</strong>
+</p>
+
+</section>
+
+<script type=module src=Components.js></script>
+<script type=module src=VanillaEscape.js></script>
+</html>
+

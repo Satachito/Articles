@@ -1,0 +1,33 @@
+<template id=TEMPLATE>
+	<style>
+		:host {
+		;	display			: inline-block
+		;	padding			: 0.5em 1em
+		;	background		: #f0f0f0
+		;	border			: 1px solid #ccc
+		;	border-radius	: 0.5em
+		;	font-family		: sans-serif
+		}
+	</style>
+	Hello <slot name=who>World</slot>!
+</template>
+
+<script type=module>
+	class
+	HelloBox extends HTMLElement {
+		constructor() {
+			super()
+			this.attachShadow( { mode: 'open' } ).appendChild(
+				TEMPLATE.content.cloneNode( true )
+			)
+		}
+	}
+	customElements.define('hello-box', HelloBox)
+</script>
+
+<hello-box>
+	<span slot=who>WebComponents</span>
+</hello-box>
+
+<hello-box></hello-box>
+

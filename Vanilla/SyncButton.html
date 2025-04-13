@@ -1,0 +1,100 @@
+<sync-button id=SYNC_BUTTON>SYNC BUTTON</sync-button><br>
+<textarea id=RESULT rows=16 cols=40></textarea><br>
+<button id=TOGGLE_ATTRIBUTE_DISABLED	>TOGGLE ATTRIBUTE DISABLED	</button><br>
+<button id=TOGGLE_PROPERTY_DISABLED		>TOGGLE PROPERTY DISABLED	</button><br>
+<button id=CHANGE_ATTRIBUTE_TYPE		>CHANGE ATTRIBUTE TYPE		</button><br>
+<button id=CHANGE_PROPERTY_TYPE			>CHANGE PROPERTY TYPE		</button><br>
+
+<script type=module>
+
+export class
+SyncButton extends HTMLElement {
+
+	constructor() {
+		super();
+
+		const
+		_ = this.innerHTML || 'Click'
+		this.textContent = ''
+		this.appendChild( document.createElement( 'button' ) ).innerHTML = _
+	}
+
+	static get observedAttributes() {
+		return [ 'disabled', 'type' ]
+	}
+
+	connectedCallback() {
+		const
+		button = this.children[ 0 ]
+		this.constructor.observedAttributes.forEach(
+			_ => this.hasAttribute( _ ) && button.setAttribute( _, this.getAttribute( _ ) )
+		)
+	}
+
+	attributeChangedCallback( name, oldVal, newVal ) {
+		this.hasAttribute( name )
+		?	this.children[ 0 ].setAttribute( name, newVal )
+		:	this.children[ 0 ].removeAttribute( name )
+	}
+
+	get disabled	() { return this.hasAttribute( 'disabled' ) }
+	get type		() { return this.getAttribute( 'type' ) ?? 'submit' }
+
+	set disabled	( _ ) {
+		_
+		?	this.setAttribute( 'disabled', '' )
+		:	this.removeAttribute( 'disabled' )
+	}
+
+	set type		( _ ) {
+		this.setAttribute( 'type', _ );
+	}
+}
+
+customElements.define( 'sync-button', SyncButton )
+
+const
+SyncDump = () => {
+	const
+	button = SYNC_BUTTON.children[ 0 ]
+
+	RESULT.textContent = `DUMPING SYNC BUTTON
+
+	attribute disabled: ${SYNC_BUTTON.hasAttribute( 'disabled' )}:${SYNC_BUTTON.getAttribute( 'disabled' )}
+	attribute disabled: ${button.hasAttribute( 'disabled' )}:${button.getAttribute( 'disabled' )}
+
+	property disabled: ${SYNC_BUTTON.disabled}
+	property disabled: ${button.disabled}
+
+	attribute type: ${SYNC_BUTTON.hasAttribute( 'type' )}:${SYNC_BUTTON.getAttribute( 'type' )}
+	attribute type: ${button.hasAttribute( 'type' )}:${button.getAttribute( 'type' )}
+
+	property type: ${SYNC_BUTTON.type}
+	property type: ${button.type}
+`
+}
+
+SyncDump()
+
+TOGGLE_ATTRIBUTE_DISABLED.onclick = () => (
+	SYNC_BUTTON.hasAttribute( 'disabled' ) ? SYNC_BUTTON.removeAttribute( 'disabled' ) : SYNC_BUTTON.setAttribute( 'disabled', '' )
+,	SyncDump()
+)
+
+TOGGLE_PROPERTY_DISABLED.onclick = () => (
+	SYNC_BUTTON.disabled = !SYNC_BUTTON.disabled
+,	SyncDump()
+)
+
+CHANGE_ATTRIBUTE_TYPE.onclick = () => (
+	SYNC_BUTTON.hasAttribute( 'type' )
+	?	SYNC_BUTTON.setAttribute( 'type', SYNC_BUTTON.getAttribute( 'type' ) === 'submit' ? 'button' : 'submit' )
+	:	SYNC_BUTTON.setAttribute( 'type', 'submit' )
+,	SyncDump()
+)
+CHANGE_PROPERTY_TYPE.onclick = () => (
+	SYNC_BUTTON.type = SYNC_BUTTON.type === 'submit' ? 'button' : 'submit'
+,	SyncDump()
+)
+</script>
+

@@ -1,0 +1,74 @@
+<script type=module>
+
+export const
+shadowSS = new CSSStyleSheet()
+shadowSS.replaceSync(`
+	:host {
+	;	font-family		: "Roboto", sans-serif
+	;	display			: inline-block
+	}
+	* {
+	;	font			: inherit
+	;	border-radius	: 4px
+	;	padding			: 0.5em 1em
+	;	margin			: 0.25em
+	;	transition		: box-shadow 0.2s, background 0.3s
+	}
+	input {
+	;	cursor			: ibeam
+	;	background		: white
+	;	border			: 1px solid #ccc
+	;	outline			: none
+	}
+	button {
+	;	cursor			: pointer
+	;	background		: #6200ee
+	;	color			: white
+	;	border			: none
+	}
+	select {
+	;	cursor			: pointer
+	;	background		: white
+	;	border			: 1px solid #ccc
+	}
+`)
+
+class
+MatInput extends HTMLElement {
+	constructor() {
+		super()
+		const SR = this.attachShadow( { mode: 'open' } )
+		SR.adoptedStyleSheets = [ shadowSS ]
+
+		SR.appendChild(
+			document.createElement( 'input' )
+		).append(
+			document.createElement( 'slot' )
+		)
+	}
+}
+customElements.define( 'mat-input', MatInput )
+
+class
+MatButton extends HTMLElement {
+	constructor() {
+		super()
+		const SR = this.attachShadow( { mode: 'open' } )
+		SR.adoptedStyleSheets = [ shadowSS ]
+
+		SR.appendChild(
+			document.createElement( 'button' )
+		).append(
+			document.createElement( 'slot' )
+		)
+	}
+}
+customElements.define( 'mat-button', MatButton )
+
+</script>
+
+<div style="border: 1px solid black">
+	<mat-input></mat-input>
+	<mat-button>Click Me</mat-button>
+</div>
+

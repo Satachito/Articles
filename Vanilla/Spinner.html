@@ -1,0 +1,57 @@
+<script type=module>
+class
+Spinner extends HTMLElement {
+    constructor() {
+        super()
+
+        this.attachShadow( { mode: 'open' } ).innerHTML = ` 
+            <style>
+                @keyframes spin {
+                    from    { transform: rotate( 0deg   ) } 
+                    to      { transform: rotate( 360deg ) } 
+                }   
+                :host {
+                ;   display     : inline-block
+                ;   animation   : spin 2s linear infinite
+                }   
+            </style>
+            <slot></slot>
+        `   
+    }   
+}
+customElements.define( 'vanilla-spinner', Spinner )
+</script>
+
+<style>
+.rem1 {
+;   width           : 1rem
+;   height          : 1rem
+}
+.packmanLoader {
+;   box-sizing      : border-box
+;   border          : 3px solid black
+;   border-top      : 3px solid transparent
+;   border-radius   : 50%
+}
+.circleLoader {
+;   box-sizing      : border-box
+;   border          : 3px solid rgba( 255, 255, 255, 0.5 )
+;   border-top      : 3px solid rgba( 255, 255, 255, 1.0 )
+;   border-radius   : 50%
+}
+</style>
+
+<body style="background-color: lightblue">
+	<vanilla-spinner>ABC</vanilla-spinner>
+	<vanilla-spinner class=rem1 style="background-color: black"></vanilla-spinner>
+	<vanilla-spinner class=rem1 style="line-height: 88%">⭐️</vanilla-spinner>
+	<vanilla-spinner class="rem1 packmanLoader"></vanilla-spinner>
+	<vanilla-spinner class="rem1 circleLoader"></vanilla-spinner>
+
+	<vanilla-spinner class=rem1 style="position: relative; border-radius: 50%; border: 1px solid black">
+		<div style="position: absolute; background-color: black; border-radius: 50%; width: 20%; height: 20%; left : 40%; bottom   : 0"></div>
+		<div style="position: absolute; background-color: black; border-radius: 50%; width: 20%; height: 20%; left : 40%; top      : 0"></div>
+		<div style="position: absolute; background-color: black; border-radius: 50%; width: 20%; height: 20%; top  : 40%; left     : 0"></div>
+		<div style="position: absolute; background-color: black; border-radius: 50%; width: 20%; height: 20%; top  : 40%; right    : 0"></div>
+	</vanilla-spinner>
+</body>

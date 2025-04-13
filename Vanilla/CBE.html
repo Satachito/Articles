@@ -1,0 +1,31 @@
+<h5>This sample does not work in browsers that do not support customized built-in elements (such as Safari).</h5>
+
+<button is=vanilla-button id=RESOLVE	>RESOLVE	</button>
+<button is=vanilla-button id=REJECT		>REJECT		</button>
+
+<script type=module>
+
+export class
+Button extends HTMLButtonElement {
+	constructor() {
+		super()
+
+		this.onclick = ev => this.CreatePromise && (
+			this.disabled = true
+		,	this.CreatePromise( ev ).finally(
+				() => this.disabled = false
+			)
+		)
+	}
+}
+customElements.define( 'vanilla-button', Button, { extends: 'button' } )
+
+RESOLVE	.CreatePromise = () => new Promise(
+	( S, J ) => setTimeout( () => S( 'RESOLVE' ), 1000 )
+).then( console.log ).catch( console.error ).finally( () => console.warn( 'FIN' ) )
+
+REJECT	.CreatePromise = () => new Promise(
+	( S, J ) => setTimeout( () => J( 'REJECT' ), 1000 )
+).then( console.log ).catch( console.error ).finally( () => console.warn( 'FIN' ) )
+
+</script>
